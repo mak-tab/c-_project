@@ -108,8 +108,8 @@ public class PatientDashboard extends JFrame {
                     String response = get(); // Получаем ответ
                     appendMessage("MediTrack AI", response);
                     
-                    // Сохраняем в историю (кратко)
-                    new HistoryDAO().saveDiagnosis(username, "AI Consultation: " + text);
+                    String logEntry = " [Q]: " + text + "\n [AI]: " + response;
+                    new HistoryDAO().saveDiagnosis(username, logEntry);
 
                 } catch (Exception e) {
                     appendMessage("System", "Error connecting to AI: " + e.getMessage());

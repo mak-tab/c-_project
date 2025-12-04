@@ -11,11 +11,12 @@ public class LoginView extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private UserDAO userDAO;
+    private JComboBox<String> roleSelector;
 
     public LoginView() {
         super("MediTrack - Secure Login");
         this.userDAO = new UserDAO();
-
+        
         // Настройка окна
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);
@@ -39,6 +40,11 @@ public class LoginView extends JFrame {
         formPanel.add(new JLabel("Password:"));
         passwordField = new JPasswordField();
         formPanel.add(passwordField);
+        
+        formPanel.add(new JLabel("Role:"));
+        String[] roles = {"PATIENT", "DOCTOR"};
+        roleSelector = new JComboBox<>(roles);
+        formPanel.add(roleSelector);
 
         add(formPanel, BorderLayout.CENTER);
 
@@ -46,7 +52,7 @@ public class LoginView extends JFrame {
         JPanel buttonPanel = new JPanel(new FlowLayout());
         
         JButton loginButton = new JButton("Login");
-        JButton registerButton = new JButton("Register New Patient");
+        JButton registerButton = new JButton("Register / Sign Up");
 
         // Логика кнопки Login
         loginButton.addActionListener((ActionEvent e) -> handleLogin());
@@ -80,19 +86,20 @@ public class LoginView extends JFrame {
     private void handleRegistration() {
         String user = usernameField.getText();
         String pass = new String(passwordField.getPassword());
+        String selectedRole = (String) roleSelector.getSelectedItem(); // Берем роль из списка
 
         if (user.isEmpty() || pass.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill fields to register.");
+            JOptionPane.showMessageDialog(this, "Please fill fields.");
             return;
         }
 
-        // Регистрируем как ПАЦИЕНТА (по умолчанию)
-        boolean success = userDAO.registerUser(user, pass, "PATIENT");
-        
+        // Передаем выбранную роль в DAO
+        boolean success = userDAO.registerUser(user, pass, selectedRole);
+
         if (success) {
-            JOptionPane.showMessageDialog(this, "Registration successful! You can now login.");
+            JOptionPane.showMessageDialog(this, "Registered as " + selectedRole + "!");
         } else {
-            JOptionPane.showMessageDialog(this, "Registration failed (User might exist).");
-        }
+            JOptionPane.showMessageDialog(this, "Registration failed.");
+       }
     }
 }
